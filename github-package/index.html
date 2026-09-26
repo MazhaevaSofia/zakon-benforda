@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Закон Бенфорда: Мажаева</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F6F1;
+    --surface:#FFFFFF;
+    --surface-2:#ECEFE7;
+    --ink:#1E2A22;
+    --ink-secondary:#5B6B5E;
+    --ink-faint:#8B978C;
+    --border:#D7DECD;
+    --accent:#33507A;
+    --accent-strong:#233A5C;
+    --accent-soft:#E3E9F1;
+    --good:#2F7A4F;
+    --good-soft:#E4F0E8;
+    --warn:#B8863B;
+    --warn-soft:#F5ECDC;
+    --bad:#B5442E;
+    --bad-soft:#F5E2DD;
+    --accent2:#7C5CA6;
+    --shadow: 0 1px 2px rgba(30,42,34,0.06), 0 6px 20px -8px rgba(30,42,34,0.18);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#10140F;
+      --surface:#171D14;
+      --surface-2:#1F271A;
+      --ink:#E7ECE1;
+      --ink-secondary:#9AAB98;
+      --ink-faint:#6C7A6A;
+      --border:#2B3527;
+      --accent:#8BA9D6;
+      --accent-strong:#AFC5E5;
+      --accent-soft:#22304A;
+      --good:#5FB981;
+      --good-soft:#1C3327;
+      --warn:#E0AC5C;
+      --warn-soft:#3A2E19;
+      --bad:#E48E77;
+      --bad-soft:#3B211B;
+      --accent2:#B49BD6;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 24px -8px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#10140F;
+    --surface:#171D14;
+    --surface-2:#1F271A;
+    --ink:#E7ECE1;
+    --ink-secondary:#9AAB98;
+    --ink-faint:#6C7A6A;
+    --border:#2B3527;
+    --accent:#8BA9D6;
+    --accent-strong:#AFC5E5;
+    --accent-soft:#22304A;
+    --good:#5FB981;
+    --good-soft:#1C3327;
+    --warn:#E0AC5C;
+    --warn-soft:#3A2E19;
+    --bad:#E48E77;
+    --bad-soft:#3B211B;
+    --accent2:#B49BD6;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 24px -8px rgba(0,0,0,0.5);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ color-scheme: light dark; }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    padding: 0 20px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width: 900px; margin: 0 auto; padding-block: 40px 80px; }
+
+  h1,h2,h3{ font-family:"Fraunces", Georgia, serif; text-wrap:balance; margin:0; }
+  .num{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  /* ---------- header ---------- */
+  header{ margin-bottom: 36px; }
+  .header-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .guide-btn{ font-size:12.5px; padding:8px 14px; flex:none; }
+  .formula-note{ margin-top:8px; font-size:12.5px; color:var(--ink-faint); }
+  .eyebrow{
+    display:flex; align-items:center; gap:10px;
+    font-family:"IBM Plex Mono", monospace;
+    font-size:12.5px; letter-spacing:.09em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:14px;
+  }
+  .eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--accent); }
+  h1{ font-size: clamp(30px, 5vw, 44px); font-weight:600; line-height:1.08; color:var(--ink); }
+  header p.lede{
+    margin-top:14px; max-width: 62ch;
+    font-size:16.5px; line-height:1.6; color:var(--ink-secondary);
+  }
+  .formula{
+    margin-top:18px; display:inline-flex; align-items:center; gap:10px;
+    background:var(--surface-2); border:1px solid var(--border);
+    border-radius:10px; padding:10px 16px;
+    font-family:"IBM Plex Mono", monospace; font-size:15px; color:var(--ink);
+  }
+  .formula span.op{ color:var(--ink-faint); }
+
+  /* ---------- cards ---------- */
+  .card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+  }
+  .card-pad{ padding: 24px; }
+  @media (max-width:600px){ .card-pad{ padding:18px; } }
+
+  section{ margin-top: 28px; }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+  .section-head h2{ font-size:20px; font-weight:600; }
+  .section-head .hint{ font-size:13px; color:var(--ink-faint); }
+
+  /* ---------- input tabs ---------- */
+  .tabs{ display:flex; gap:6px; border-bottom:1px solid var(--border); margin-bottom:20px; flex-wrap:wrap; }
+  .tab-btn{
+    appearance:none; border:none; background:none; cursor:pointer;
+    font-family:"IBM Plex Sans", sans-serif; font-size:14px; font-weight:500;
+    color:var(--ink-faint); padding:10px 4px; margin-right:18px;
+    border-bottom:2px solid transparent; margin-bottom:-1px;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .tab-btn:hover{ color:var(--ink); }
+  .tab-btn[aria-selected="true"]{ color:var(--accent); border-bottom-color:var(--accent); }
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  .demo-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap:10px; }
+  .demo-card{
+    text-align:left; cursor:pointer;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    padding:14px 16px; font-family:inherit; color:var(--ink);
+    transition: border-color .15s ease, transform .1s ease;
+  }
+  .demo-card:hover{ border-color:var(--accent); }
+  .demo-card:active{ transform: scale(0.99); }
+  .demo-card .name{ font-weight:600; font-size:14.5px; display:flex; align-items:center; gap:8px;}
+  .demo-card .desc{ font-size:12.5px; color:var(--ink-secondary); margin-top:5px; line-height:1.45; }
+  .tag{
+    font-family:"IBM Plex Mono", monospace; font-size:10.5px; letter-spacing:.04em; text-transform:uppercase;
+    padding:2px 7px; border-radius:99px; font-weight:600;
+  }
+  .tag.conforms{ background:var(--good-soft); color:var(--good); }
+  .tag.breaks{ background:var(--bad-soft); color:var(--bad); }
+
+  textarea{
+    width:100%; min-height:140px; resize:vertical;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:12px 14px; color:var(--ink); font-family:"IBM Plex Mono", monospace; font-size:13.5px;
+    line-height:1.55;
+  }
+  textarea:focus, input:focus, select:focus, button:focus-visible{
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:12px; }
+  .btn{
+    appearance:none; border:1px solid var(--accent); background:var(--accent); color:#fff;
+    font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:13.5px;
+    padding:10px 18px; border-radius:9px; cursor:pointer;
+    transition: background .15s ease, transform .1s ease;
+  }
+  .btn:hover{ background:var(--accent-strong); border-color:var(--accent-strong); }
+  .btn:active{ transform: scale(0.98); }
+  .btn.ghost{
+    background:transparent; color:var(--ink); border-color:var(--border);
+  }
+  .btn.ghost:hover{ border-color:var(--ink-faint); background:var(--surface-2); }
+
+  .file-drop{
+    border:1.5px dashed var(--border); border-radius:12px; padding:22px;
+    text-align:center; color:var(--ink-secondary); font-size:13.5px;
+    background:var(--surface-2);
+  }
+  .file-drop.drag{ border-color:var(--accent); color:var(--accent); }
+  .file-drop input[type=file]{ display:none; }
+  .file-drop label{ color:var(--accent); font-weight:600; cursor:pointer; }
+  select{
+    background:var(--surface); border:1px solid var(--border); border-radius:8px;
+    padding:8px 10px; color:var(--ink); font-family:inherit; font-size:13.5px;
+  }
+  .field-label{ font-size:12px; color:var(--ink-faint); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px; display:block;}
+  .status-line{ font-size:13px; color:var(--ink-secondary); margin-top:10px; min-height:18px; }
+  .status-line.error{ color:var(--bad); }
+
+  /* ---------- results ---------- */
+  #results{ display:none; }
+  #results.active{ display:block; }
+
+  .verdict-banner{
+    display:flex; align-items:center; gap:16px; padding:18px 22px; border-radius:14px; flex-wrap:wrap;
+  }
+  .verdict-banner .pill{
+    font-family:"IBM Plex Mono", monospace; font-weight:600; font-size:12.5px; letter-spacing:.04em; text-transform:uppercase;
+    padding:6px 12px; border-radius:99px; white-space:nowrap;
+  }
+  .verdict-banner p{ margin:0; font-size:14.5px; line-height:1.55; color:var(--ink); flex:1; min-width:220px; }
+
+  .stat-grid{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+    gap:1px; background:var(--border); border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-top:16px;
+  }
+  .stat-tile{ background:var(--surface); padding:16px 18px; }
+  .stat-tile .label{ font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); font-weight:600; }
+  .stat-tile .value{ font-size:22px; font-weight:600; margin-top:6px; }
+  .stat-tile .sub{ font-size:12px; color:var(--ink-secondary); margin-top:3px; }
+  .tile-note{ font-size:12px; color:var(--ink-secondary); margin-top:2px; line-height:1.4; }
+
+  .onboarding-overlay{
+    position:fixed; inset:0; background:rgba(16,20,15,0.55);
+    display:flex; align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  .onboarding-overlay[hidden]{ display:none; }
+  .onboarding-card{
+    background:var(--surface); border:1px solid var(--border); border-radius:18px;
+    max-width:520px; width:100%; padding:30px 28px 26px; position:relative;
+    box-shadow: 0 20px 60px -12px rgba(0,0,0,0.4); max-height:88vh; overflow-y:auto;
+  }
+  .onboarding-close{
+    position:absolute; top:14px; right:14px; width:30px; height:30px; border-radius:50%;
+    border:1px solid var(--border); background:var(--surface-2); color:var(--ink-secondary);
+    cursor:pointer; font-size:14px; line-height:1;
+  }
+  .onboarding-close:hover{ color:var(--ink); border-color:var(--ink-faint); }
+  .onboarding-eyebrow{
+    font-family:"IBM Plex Mono", monospace; font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--accent); margin-bottom:8px;
+  }
+  .onboarding-card h2{ font-size:24px; font-weight:600; margin-bottom:12px; padding-right:24px; }
+  .onboarding-card > p{ font-size:14.5px; line-height:1.6; color:var(--ink-secondary); margin:0 0 18px; }
+  .onboarding-steps{ display:flex; flex-direction:column; gap:14px; margin-bottom:18px; }
+  .onboarding-step{ display:flex; gap:12px; align-items:flex-start; }
+  .onboarding-num{
+    flex:none; width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;
+    font-family:"IBM Plex Mono", monospace;
+  }
+  .onboarding-step div{ font-size:14px; line-height:1.55; color:var(--ink); }
+  .onboarding-step b{ font-weight:600; }
+  .onboarding-hint{ font-size:12.5px !important; color:var(--ink-faint) !important; }
+
+  .chart-card{ margin-top:20px; }
+  .legend{ display:flex; gap:18px; flex-wrap:wrap; font-size:13px; color:var(--ink-secondary); margin-top:14px;}
+  .legend .item{ display:flex; align-items:center; gap:7px; }
+  .legend .swatch{ width:14px; height:14px; border-radius:4px; flex:none; }
+  .legend .swatch.bar{ background:var(--accent); }
+  .legend .swatch.bar2{ background:var(--accent2); }
+  .legend .swatch.line{ background:none; border-top:2px dashed var(--ink-faint); height:0; width:16px; }
+
+  .seg{ display:inline-flex; background:var(--surface-2); border:1px solid var(--border); border-radius:9px; padding:3px; gap:2px; }
+  .seg-btn{ appearance:none; border:none; background:none; font-family:inherit; font-size:13px; font-weight:600; color:var(--ink-secondary); padding:7px 13px; border-radius:7px; cursor:pointer; }
+  .seg-btn[aria-selected="true"]{ background:var(--surface); color:var(--accent); box-shadow:var(--shadow); }
+  .chart-controls{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:4px; }
+  .compare-field{ display:flex; align-items:center; gap:8px; margin-left:auto; }
+  .compare-field select{ min-width:160px; }
+
+  .info-icon{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:15px; height:15px; border-radius:50%; background:var(--surface-2); color:var(--ink-faint);
+    font-size:10.5px; font-weight:700; font-style:normal; cursor:help; vertical-align:middle; margin-left:5px;
+    border:1px solid var(--border);
+  }
+  .tile-head{ display:flex; align-items:center; }
+
+  .spark-card{ margin-top:16px; }
+  .spark-wrap{ position:relative; margin-top:10px; }
+  #sparkline text{ font-family:"IBM Plex Mono", monospace; fill:var(--ink-faint); }
+
+  .copy-btn{
+    appearance:none; border:1px solid var(--border); background:var(--surface); color:var(--ink);
+    font-family:"IBM Plex Sans", sans-serif; font-weight:600; font-size:12.5px;
+    padding:7px 13px; border-radius:8px; cursor:pointer; white-space:nowrap;
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .copy-btn:hover{ border-color:var(--ink-faint); background:var(--surface-2); }
+  .copy-btn.copied{ border-color:var(--good); color:var(--good); }
+
+  .source-list{ margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+  .source-list li{ font-size:13.5px; line-height:1.55; color:var(--ink-secondary); padding-left:18px; position:relative; }
+  .source-list li::before{ content:"•"; position:absolute; left:0; color:var(--ink-faint); }
+  .source-list a{ color:var(--accent); text-decoration:none; border-bottom:1px solid var(--accent-soft); }
+  .source-list a:hover{ border-bottom-color:var(--accent); }
+
+  svg text{ font-family:"IBM Plex Mono", monospace; fill:var(--ink-secondary); }
+  .tooltip{
+    position:absolute; pointer-events:none; background:var(--ink); color:var(--bg);
+    padding:8px 11px; border-radius:8px; font-size:12.5px; line-height:1.5;
+    font-family:"IBM Plex Mono", monospace; box-shadow:var(--shadow);
+    transform: translate(-50%, -100%); white-space:nowrap; opacity:0; transition:opacity .1s ease; z-index:5;
+  }
+  .tooltip.show{ opacity:1; }
+  .tooltip b{ color:var(--bg); }
+
+  table.data-table{ width:100%; border-collapse:collapse; margin-top:16px; font-size:13.5px; }
+  table.data-table th, table.data-table td{
+    text-align:right; padding:9px 10px; border-bottom:1px solid var(--border);
+  }
+  table.data-table th:first-child, table.data-table td:first-child{ text-align:left; }
+  table.data-table thead th{ font-size:11px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); font-weight:600; border-bottom:1.5px solid var(--border); }
+  table.data-table tbody tr:hover{ background:var(--surface-2); }
+  .table-wrap{ overflow-x:auto; }
+
+  details{ margin-top:20px; }
+  details > summary{
+    cursor:pointer; list-style:none; display:flex; align-items:center; gap:8px;
+    font-weight:600; font-size:15px; padding:4px 0; color:var(--ink);
+  }
+  details > summary::-webkit-details-marker{ display:none; }
+  details > summary .chev{ transition: transform .15s ease; color:var(--ink-faint); }
+  details[open] > summary .chev{ transform: rotate(90deg); }
+  .details-body{ padding: 14px 0 4px; color:var(--ink-secondary); font-size:14.5px; line-height:1.65; }
+  .details-body p{ margin: 0 0 12px; }
+  .details-body ul{ margin:0 0 12px; padding-left:20px; }
+  .mini-table{ width:100%; max-width:420px; border-collapse:collapse; margin:14px 0; font-size:13px; }
+  .mini-table th, .mini-table td{ padding:6px 10px; text-align:right; border-bottom:1px solid var(--border); }
+  .mini-table th:first-child, .mini-table td:first-child{ text-align:left; }
+
+  footer{ margin-top:48px; padding-top:20px; border-top:1px solid var(--border); font-size:12.5px; color:var(--ink-faint); display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+
+  @media print{
+    body{ background:#fff; color:#000; }
+    .tabs, .no-print{ display:none !important; }
+    .card{ box-shadow:none; border-color:#ccc; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+
+  <header>
+    <div class="header-top">
+      <div class="eyebrow"><span class="dot"></span>Инструмент математического исследования</div>
+      <button class="btn ghost guide-btn no-print" id="openGuideBtn">Как пользоваться</button>
+    </div>
+    <h1>Закон Бенфорда</h1>
+    <p class="lede">Проверьте любой набор чисел: подходит ли он под особую закономерность, которой пользуются аудиторы и следователи, чтобы находить подделанные цифры. Разбираться в математике не нужно, сайт сам всё посчитает и объяснит результат простыми словами.</p>
+    <div class="formula">P(d) = log<span style="font-size:10px;vertical-align:sub;">10</span>(1 <span class="op">+</span> 1/d)<span style="color:var(--ink-faint); margin-left:6px;">, d = 1 … 9</span></div>
+    <div class="formula-note">Формулу можно не читать: всё считает сама программа.</div>
+  </header>
+
+  <section aria-label="Загрузка данных">
+    <div class="card card-pad">
+      <div class="tabs" role="tablist">
+        <button class="tab-btn" role="tab" aria-selected="true" data-tab="demo">Примеры</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="paste">Вставить числа</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="file">Загрузить CSV</button>
+      </div>
+
+      <div class="tab-panel active" data-panel="demo">
+        <div class="demo-grid" id="demoGrid"></div>
+      </div>
+
+      <div class="tab-panel" data-panel="paste">
+        <span class="field-label">Числа (по одному в строке, через запятую или пробел)</span>
+        <textarea id="pasteInput" placeholder="1234&#10;58120&#10;76&#10;904512&#10;...">
+        </textarea>
+        <div class="row">
+          <button class="btn" id="analyzePaste">Проанализировать</button>
+        </div>
+      </div>
+
+      <div class="tab-panel" data-panel="file">
+        <div class="file-drop" id="dropZone">
+          <div>Перетащите CSV-файл сюда или <label for="fileInput">выберите файл</label></div>
+          <input type="file" id="fileInput" accept=".csv,.tsv,.txt">
+        </div>
+        <div class="row" id="fileColumnRow" style="display:none;">
+          <div>
+            <span class="field-label">Столбец с числами</span>
+            <select id="columnSelect"></select>
+          </div>
+          <button class="btn" id="analyzeFile" style="margin-top:18px;">Проанализировать</button>
+        </div>
+      </div>
+
+      <div class="status-line" id="statusLine"></div>
+    </div>
+  </section>
+
+  <div id="results">
+
+    <section aria-label="Вывод">
+      <div class="verdict-banner card" id="verdictBanner">
+        <span class="pill" id="verdictPill">—</span>
+        <p id="verdictText">—</p>
+        <button class="copy-btn no-print" id="copyBtn">Скопировать вывод</button>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-tile">
+          <div class="label">Значений</div>
+          <div class="value num" id="statN">—</div>
+          <div class="sub" id="statNsub">&nbsp;</div>
+        </div>
+        <div class="stat-tile">
+          <div class="tile-head">
+            <span class="label" id="statChiLabel">χ² (df=8)</span>
+            <span class="info-icon" title="Мера согласия наблюдаемого и ожидаемого распределений: чем больше значение, тем сильнее данные отклоняются от закона Бенфорда.">i</span>
+          </div>
+          <div class="tile-note">насколько сильно данные отличаются от нормы</div>
+          <div class="value num" id="statChi">—</div>
+          <div class="sub" id="statP">&nbsp;</div>
+          <div class="sub" id="statChiCrit">&nbsp;</div>
+        </div>
+        <div class="stat-tile">
+          <div class="tile-head">
+            <span class="label">MAD</span>
+            <span class="info-icon" title="Среднее абсолютное отклонение фактической доли от ожидаемой по всем цифрам. Интерпретируется по шкале М. Найджирини.">i</span>
+          </div>
+          <div class="tile-note">средняя ошибка в процентных пунктах: чем ближе к нулю, тем лучше</div>
+          <div class="value num" id="statMad">—</div>
+        </div>
+        <div class="stat-tile">
+          <div class="label">Источник</div>
+          <div class="value" id="statSource" style="font-size:15px; line-height:1.35;">—</div>
+        </div>
+      </div>
+
+      <div class="card card-pad spark-card">
+        <div class="section-head">
+          <h2 style="font-size:16px;">Устойчивость MAD с ростом выборки</h2>
+          <span class="hint">пунктир: порог полного соответствия (0,006)</span>
+        </div>
+        <div class="spark-wrap">
+          <svg id="sparkline" viewBox="0 0 720 130" style="width:100%; height:auto; display:block;"></svg>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="График распределения" class="chart-card">
+      <div class="card card-pad">
+        <div class="section-head">
+          <h2 id="chartTitle">Распределение первых цифр</h2>
+          <span class="hint">наведите курсор на столбец</span>
+        </div>
+        <div class="chart-controls">
+          <div class="seg" role="tablist" aria-label="Порядок цифры">
+            <button class="seg-btn" data-mode="first" aria-selected="true">Первая цифра</button>
+            <button class="seg-btn" data-mode="second" aria-selected="false">Вторая цифра</button>
+          </div>
+          <div class="compare-field">
+            <span class="field-label" style="margin:0;">Сравнить с</span>
+            <select id="compareSelect"><option value="">не сравнивать</option></select>
+          </div>
+        </div>
+        <div class="legend" id="legend">
+          <span class="item"><span class="swatch bar"></span>Ваши данные</span>
+          <span class="item"><span class="swatch line"></span>Ожидаемо по закону Бенфорда</span>
+        </div>
+        <div style="position:relative; margin-top:12px;">
+          <svg id="chart" viewBox="0 0 720 320" style="width:100%; height:auto; display:block; overflow:visible;"></svg>
+          <div class="tooltip" id="tooltip"></div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-label="Таблица значений">
+      <div class="card card-pad">
+        <div class="section-head">
+          <h2 style="font-size:16px;">Точные значения по цифрам</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="dataTable">
+            <thead>
+              <tr><th>Цифра</th><th>Наблюдалось</th><th>Факт, %</th><th>Ожидалось, %</th><th>Отклонение</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="row no-print">
+          <button class="btn ghost" id="printBtn">Печать / сохранить отчёт как PDF</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <section aria-label="Объяснение">
+    <div class="card card-pad">
+      <details>
+        <summary><span class="chev">▸</span> Как устроен закон Бенфорда и что означают показатели</summary>
+        <div class="details-body">
+          <p>В 1881 году астроном Саймон Ньюком заметил, что первые страницы таблиц логарифмов в библиотеке затёрты сильнее последних: числа, начинающиеся с 1, ищут чаще, чем числа, начинающиеся с 9. В 1938 году физик Фрэнк Бенфорд проверил закономерность на 20 229 значениях из самых разных источников (от площадей рек до чисел из газетных статей) и вывел формулу:</p>
+          <table class="mini-table">
+            <thead><tr><th>Цифра d</th><th>P(d)</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td class="num">30,1 %</td></tr>
+              <tr><td>2</td><td class="num">17,6 %</td></tr>
+              <tr><td>3</td><td class="num">12,5 %</td></tr>
+              <tr><td>4</td><td class="num">9,7 %</td></tr>
+              <tr><td>5</td><td class="num">7,9 %</td></tr>
+              <tr><td>6</td><td class="num">6,7 %</td></tr>
+              <tr><td>7</td><td class="num">5,8 %</td></tr>
+              <tr><td>8</td><td class="num">5,1 %</td></tr>
+              <tr><td>9</td><td class="num">4,6 %</td></tr>
+            </tbody>
+          </table>
+          <p>Закон хорошо выполняется на данных, которые охватывают несколько порядков величины и не ограничены искусственно сверху или снизу: население городов, суммы в финансовой отчётности, физические константы, степенные ряды. Он <b>не</b> работает на данных с фиксированным диапазоном (рост человека в см) или там, где числа являются присвоенными идентификаторами, а не измеренными величинами (номера телефонов, ИНН).</p>
+          <p><b>χ² (хи-квадрат)</b> показывает степень согласия наблюдаемого и ожидаемого распределений: чем сильнее отличие, тем больше значение. При 8 степенях свободы это позволяет получить p-значение, то есть вероятность того, что расхождение случайно.</p>
+          <p><b>MAD</b> (mean absolute deviation) равен среднему из девяти абсолютных отклонений факта от ожидания. В прикладном аудите (шкала M. Найджирини) для теста первой цифры ориентируются на диапазоны:</p>
+          <ul>
+            <li>0,000–0,006: полное соответствие</li>
+            <li>0,006–0,012: приемлемое соответствие</li>
+            <li>0,012–0,015: пограничное соответствие</li>
+            <li>&gt; 0,015: несоответствие закону</li>
+          </ul>
+          <p>Именно резкое, необъяснённое несоответствие в данных, которые обычно подчиняются закону Бенфорда (например, в финансовой отчётности), считается одним из сигналов, которые используют аудиторы и следователи для отбора записей на более глубокую проверку. Само по себе несоответствие не доказывает подделку: это повод присмотреться внимательнее.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section aria-label="Источники">
+    <div class="card card-pad">
+      <h2 style="font-size:16px; margin-bottom:14px;">Источники и литература</h2>
+      <ul class="source-list">
+        <li>Benford, F. (1938). <i>The Law of Anomalous Numbers.</i> Proceedings of the American Philosophical Society, 78(4), 551–572. Первая строгая формулировка и проверка закона на 20 229 значениях из 20 разных источников.</li>
+        <li>Newcomb, S. (1881). <i>Note on the Frequency of Use of the Different Digits in Natural Numbers.</i> American Journal of Mathematics, 4(1), 39–40. Первое наблюдение закономерности по износу таблиц логарифмов.</li>
+        <li>Nigrini, M. J. (2012). <i>Benford's Law: Applications for Forensic Accounting, Auditing, and Fraud Detection.</i> Wiley. Источник шкалы MAD и методики применения закона в аудите.</li>
+        <li>Национальный статистический комитет Республики Беларусь (Белстат). <a href="https://www.belstat.gov.by/" target="_blank" rel="noopener">belstat.gov.by</a>: источник демонстрационного набора «Города Беларуси».</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <span>Инструмент для исследовательской работы по математике. Автор: Мажаева</span>
+    <span>Вся обработка данных выполняется локально в браузере: файлы никуда не отправляются</span>
+  </footer>
+
+</div>
+
+<div class="onboarding-overlay no-print" id="onboardingOverlay" role="dialog" aria-modal="true" aria-labelledby="onboardingTitle" hidden>
+  <div class="onboarding-card">
+    <button class="onboarding-close" id="onboardingClose" aria-label="Закрыть окно">✕</button>
+    <div class="onboarding-eyebrow">Добро пожаловать</div>
+    <h2 id="onboardingTitle">Как пользоваться этим сайтом</h2>
+    <p>Этот сайт проверяет любой набор чисел на соответствие закону Бенфорда: закономерности, по которой числа чаще начинаются с 1, чем с 9. Математику знать не нужно: сайт сам всё посчитает и объяснит результат простыми словами.</p>
+    <div class="onboarding-steps">
+      <div class="onboarding-step">
+        <span class="onboarding-num">1</span>
+        <div><b>Возьмите готовый пример или вставьте свои числа.</b><br>Три вкладки ниже: «Примеры» (просто нажмите на карточку), «Вставить числа» (вставьте свои) или «Загрузить CSV» (загрузите файл-таблицу).</div>
+      </div>
+      <div class="onboarding-step">
+        <span class="onboarding-num">2</span>
+        <div><b>Сайт сам всё посчитает.</b><br>Ничего дополнительно нажимать не нужно: результат появится сразу же ниже, с цветной плашкой-выводом.</div>
+      </div>
+      <div class="onboarding-step">
+        <span class="onboarding-num">3</span>
+        <div><b>Смотрите на цвет.</b><br>Зелёный: данные хорошо совпадают с законом. Жёлтый: есть отклонения, но не критичные. Красный: данные сильно отличаются от ожидаемого. Рядом всегда есть объяснение простыми словами.</div>
+      </div>
+    </div>
+    <p class="onboarding-hint">Подробности о самом законе Бенфорда и всех показателях есть в конце страницы, в разделе «Как устроен закон Бенфорда». Вернуться к этой инструкции можно кнопкой «Как пользоваться» вверху страницы.</p>
+    <button class="btn" id="onboardingStart">Понятно, приступить</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- demo datasets ---------------- */
+  function powersOfTwo(){
+    const arr=[]; let v=1;
+    for(let i=0;i<120;i++){ v*=2; arr.push(v); }
+    return arr;
+  }
+  function fibonacci(){
+    const arr=[]; let a=1,b=1;
+    for(let i=0;i<80;i++){ arr.push(a); [a,b]=[b,a+b]; }
+    return arr;
+  }
+  function belarusCities(){
+    // 22 крупнейших города Беларуси по данным Белстата на 1 января 2024 г. (округлено).
+    // См. раздел «Источники и литература». Для итоговой работы расширьте список
+    // полным перечнем населённых пунктов из официального отчёта.
+    return [1992862,501102,361115,358395,353110,344470,207351,
+      171361,135696,124295,105152,103916,102759,97818,95717,
+      89068,79579,76844,65213,63744,60056,10019];
+  }
+  function fabricatedNumbers(){
+    // Uniformly-distributed synthetic numbers: a textbook example of data that
+    // does NOT follow Benford's law, used to demonstrate contrast.
+    const arr=[]; let seed=7;
+    function rnd(){ seed=(seed*9301+49297)%233280; return seed/233280; }
+    for(let i=0;i<160;i++){ arr.push(Math.round(1000+rnd()*8999)); }
+    return arr;
+  }
+
+  const DATASETS = [
+    { id:"fib", name:"Числа Фибоначчи", tag:"conforms", tagText:"соответствует",
+      desc:"Первые 80 чисел последовательности Фибоначчи: классический точный пример закона.",
+      source:"Точный математический ряд", data:fibonacci },
+    { id:"pow2", name:"Степени двойки", tag:"conforms", tagText:"соответствует",
+      desc:"2¹ … 2¹²⁰: экспоненциальный рост даёт почти идеальное совпадение с законом.",
+      source:"Точный математический ряд", data:powersOfTwo },
+    { id:"cities", name:"Города Беларуси", tag:"conforms", tagText:"соответствует",
+      desc:"22 крупнейших города по данным Белстата на 1 января 2024 г. (округлено). Реальные данные, а не синтетика.",
+      source:"Белстат, 1 января 2024 г. (округлено)", data:belarusCities },
+    { id:"fake", name:"«Подделанные» числа", tag:"breaks", tagText:"не соответствует",
+      desc:"Случайные числа, придуманные без учёта закона: так обычно выглядят искусственно подобранные цифры.",
+      source:"Синтетические данные (равномерное распределение)", data:fabricatedNumbers },
+  ];
+
+  /* ---------------- math ---------------- */
+  function digitString(n){
+    n = Math.abs(n);
+    if (!isFinite(n) || n===0) return null;
+    let s;
+    if (n >= 1e21 || (n>0 && n < 1e-6)){
+      s = n.toExponential(15).split("e")[0].replace(".", "");
+    } else {
+      s = n.toString();
+      if (s.indexOf("e") > -1) s = n.toExponential(15).split("e")[0].replace(".", "");
+      else s = s.replace(".", "").replace(/^0+/, "");
+    }
+    return s.length ? s : null;
+  }
+  function firstDigit(n){
+    const s = digitString(n);
+    if (!s) return null;
+    const d = +s[0];
+    return d>=1 ? d : null;
+  }
+  function secondDigit(n){
+    const s = digitString(n);
+    if (!s || s.length < 2) return null;
+    return +s[1];
+  }
+
+  function benfordExpected(d){ return Math.log10(1 + 1/d); }
+  function benfordExpectedSecond(d2){
+    let p = 0;
+    for (let d1=1; d1<=9; d1++) p += Math.log10(1 + 1/(10*d1+d2));
+    return p;
+  }
+  const CHI_CRIT = { 8: 15.51, 9: 16.92 }; // критическое значение χ² при α=0,05
+
+  function gammln(x){
+    const cof=[76.18009172947146,-86.50532032941677,24.01409824083091,
+      -1.231739572450155,0.1208650973866179e-2,-0.5395239384953e-5];
+    let y=x, tmp=x+5.5;
+    tmp -= (x+0.5)*Math.log(tmp);
+    let ser=1.000000000190015;
+    for(let j=0;j<6;j++){ y+=1; ser+=cof[j]/y; }
+    return -tmp + Math.log(2.5066282746310005*ser/x);
+  }
+  function gser(a,x){
+    if (x<=0) return 0;
+    const gln=gammln(a);
+    let ap=a, sum=1/a, del=sum;
+    for(let n=1;n<=200;n++){
+      ap+=1; del*=x/ap; sum+=del;
+      if (Math.abs(del) < Math.abs(sum)*3e-9) break;
+    }
+    return sum*Math.exp(-x+a*Math.log(x)-gln);
+  }
+  function gcf(a,x){
+    const gln=gammln(a);
+    let b=x+1-a, c=1/1e-30, d=1/b, h=d;
+    for(let i=1;i<=200;i++){
+      const an=-i*(i-a);
+      b+=2; d=an*d+b; if(Math.abs(d)<1e-30) d=1e-30;
+      c=b+an/c; if(Math.abs(c)<1e-30) c=1e-30;
+      d=1/d; const del=d*c; h*=del;
+      if (Math.abs(del-1)<3e-9) break;
+    }
+    return Math.exp(-x+a*Math.log(x)-gln)*h;
+  }
+  function chisqPValue(chiSq, df){
+    const a=df/2, x=chiSq/2;
+    if (x<=0) return 1;
+    if (x < a+1) return 1-gser(a,x);
+    return gcf(a,x);
+  }
+
+  function digitsForMode(mode){
+    return mode==="second" ? [0,1,2,3,4,5,6,7,8,9] : [1,2,3,4,5,6,7,8,9];
+  }
+  function expectedForMode(mode, d){
+    return mode==="second" ? benfordExpectedSecond(d) : benfordExpected(d);
+  }
+  function digitForMode(mode, n){
+    return mode==="second" ? secondDigit(n) : firstDigit(n);
+  }
+
+  function analyze(numbers, mode){
+    const digits = digitsForMode(mode);
+    const df = digits.length - 1;
+    const counts = {}; digits.forEach(d=>counts[d]=0);
+    let used=0, discarded=0;
+    numbers.forEach(n=>{
+      const d = digitForMode(mode, n);
+      if (d===null){ discarded++; return; }
+      counts[d]++; used++;
+    });
+    const rows = [];
+    let chiSq=0, madSum=0;
+    digits.forEach(d=>{
+      const obsPct = used? counts[d]/used : 0;
+      const expPct = expectedForMode(mode, d);
+      const expCount = expPct*used;
+      if (expCount>0) chiSq += Math.pow(counts[d]-expCount,2)/expCount;
+      madSum += Math.abs(obsPct-expPct);
+      rows.push({ d, count:counts[d], obsPct, expPct });
+    });
+    const mad = madSum/digits.length;
+    const p = used>0 ? chisqPValue(chiSq,df) : 1;
+    let verdict, verdictKey;
+    if (mad < 0.006){ verdict="Полное соответствие"; verdictKey="good"; }
+    else if (mad < 0.012){ verdict="Приемлемое соответствие"; verdictKey="good"; }
+    else if (mad < 0.015){ verdict="Пограничное соответствие"; verdictKey="warn"; }
+    else { verdict="Несоответствие закону"; verdictKey="bad"; }
+    return { rows, used, discarded, chiSq, p, df, mad, verdict, verdictKey, mode };
+  }
+
+  function computeMadTrajectory(numbers, mode){
+    const digits = digitsForMode(mode);
+    const counts = {}; digits.forEach(d=>counts[d]=0);
+    let used=0;
+    const total = numbers.length;
+    const sampleEvery = Math.max(1, Math.floor(total/120));
+    const points = [];
+    numbers.forEach((n,idx)=>{
+      const d = digitForMode(mode, n);
+      if (d!==null){ counts[d]++; used++; }
+      if (used>0 && ((idx+1)%sampleEvery===0 || idx===total-1)){
+        let madSum=0;
+        digits.forEach(dd=>{
+          const obsPct = counts[dd]/used;
+          madSum += Math.abs(obsPct - expectedForMode(mode, dd));
+        });
+        points.push({ n: used, mad: madSum/digits.length });
+      }
+    });
+    return points;
+  }
+
+  /* ---------------- parsing ---------------- */
+  function parseFreeText(text){
+    return text
+      .split(/[\n,;]+/)
+      .map(s=>s.trim())
+      .filter(Boolean)
+      .map(s=>{
+        s = s.replace(/\s+/g,"");
+        // handle "1 234,56"-style: comma as decimal only if no dot present
+        if (s.indexOf(",")>-1 && s.indexOf(".")===-1) s = s.replace(",", ".");
+        else s = s.replace(/,/g,"");
+        return parseFloat(s);
+      })
+      .filter(n=>!isNaN(n) && isFinite(n));
+  }
+
+  function detectDelimiter(line){
+    const counts = { ",":(line.match(/,/g)||[]).length, ";":(line.match(/;/g)||[]).length, "\t":(line.match(/\t/g)||[]).length };
+    let best=","; let bestN=-1;
+    for(const k in counts){ if(counts[k]>bestN){ bestN=counts[k]; best=k; } }
+    return bestN>0 ? best : ",";
+  }
+
+  /* ---------------- rendering ---------------- */
+  const $ = sel => document.querySelector(sel);
+  const statusLine = $("#statusLine");
+  const resultsEl = $("#results");
+
+  function setStatus(msg, isError){
+    statusLine.textContent = msg || "";
+    statusLine.classList.toggle("error", !!isError);
+  }
+
+  function fmtPct(x){ return (x*100).toLocaleString("ru-RU",{minimumFractionDigits:1,maximumFractionDigits:1}) + " %"; }
+  function fmtNum(x, d){ return x.toLocaleString("ru-RU",{minimumFractionDigits:d,maximumFractionDigits:d}); }
+
+  function renderChart(rows, compareRows){
+    const svg = $("#chart");
+    const n = rows.length;
+    const W=720, H=320, padL=42, padR=14, padT=14, padB=34;
+    const plotW = W-padL-padR, plotH = H-padT-padB;
+    const hasCompare = !!compareRows;
+    const allVals = rows.map(r=>Math.max(r.obsPct, r.expPct));
+    if (hasCompare) compareRows.forEach(r=>allVals.push(r.obsPct));
+    const maxVal = Math.max(0.32, ...allVals) * 1.08;
+    const barSlot = plotW/n;
+    const barW = hasCompare ? barSlot*0.30 : barSlot*0.52;
+    const gap = hasCompare ? barSlot*0.08 : 0;
+
+    function x(i){ return padL + i*barSlot + barSlot/2; }
+    function y(v){ return padT + plotH - (v/maxVal)*plotH; }
+
+    let s = "";
+    // gridlines
+    const ticks = [0, 0.1, 0.2, 0.3].filter(t=>t<=maxVal+0.001);
+    ticks.forEach(t=>{
+      const yy = y(t);
+      s += `<line x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}" stroke="var(--border)" stroke-width="1"/>`;
+      s += `<text x="${padL-8}" y="${yy+4}" font-size="11" text-anchor="end">${Math.round(t*100)}%</text>`;
+    });
+    // baseline
+    s += `<line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="var(--ink-faint)" stroke-width="1"/>`;
+
+    // bars
+    rows.forEach((r,i)=>{
+      const cx = x(i);
+      const bx1 = hasCompare ? cx-gap/2-barW : cx-barW/2;
+      const by1 = y(r.obsPct), bh1 = (padT+plotH)-by1;
+      s += `<rect class="bar" data-i="${i}" x="${bx1}" y="${by1}" width="${barW}" height="${Math.max(bh1,0)}" rx="4" fill="var(--accent)" />`;
+      if (hasCompare){
+        const cr = compareRows[i];
+        const bx2 = cx+gap/2;
+        const by2 = y(cr.obsPct), bh2 = (padT+plotH)-by2;
+        s += `<rect data-i="${i}" x="${bx2}" y="${by2}" width="${barW}" height="${Math.max(bh2,0)}" rx="4" fill="var(--accent2)" />`;
+      }
+      s += `<text x="${cx}" y="${padT+plotH+20}" font-size="12.5" text-anchor="middle" fill="var(--ink)">${r.d}</text>`;
+    });
+
+    // expected line
+    let path = "";
+    rows.forEach((r,i)=>{
+      const px=x(i), py=y(r.expPct);
+      path += (i===0? "M":"L") + px + "," + py + " ";
+    });
+    s += `<path d="${path}" fill="none" stroke="var(--ink-faint)" stroke-width="2" stroke-dasharray="5 4"/>`;
+    rows.forEach((r,i)=>{
+      s += `<circle cx="${x(i)}" cy="${y(r.expPct)}" r="3.2" fill="var(--surface)" stroke="var(--ink-faint)" stroke-width="2"/>`;
+    });
+
+    // hover targets
+    rows.forEach((r,i)=>{
+      s += `<rect class="hit" data-i="${i}" x="${padL+i*barSlot}" y="${padT}" width="${barSlot}" height="${plotH}" fill="transparent" style="cursor:pointer;"/>`;
+    });
+
+    svg.innerHTML = s;
+
+    const tooltip = $("#tooltip");
+    svg.querySelectorAll(".hit").forEach(hit=>{
+      const i = +hit.getAttribute("data-i");
+      const r = rows[i];
+      hit.addEventListener("mousemove", (e)=>{
+        const box = svg.getBoundingClientRect();
+        const relX = ((e.clientX-box.left)/box.width)*W;
+        const px = (relX/W)*box.width;
+        const py = ((y(r.obsPct))/H)*box.height;
+        tooltip.style.left = px+"px";
+        tooltip.style.top = Math.max(py-8,10)+"px";
+        let html = `<b>Цифра ${r.d}</b><br>Ваши данные: ${fmtPct(r.obsPct)} (${r.count})<br>Ожидалось: ${fmtPct(r.expPct)}`;
+        if (hasCompare) html += `<br>Сравнение: ${fmtPct(compareRows[i].obsPct)} (${compareRows[i].count})`;
+        tooltip.innerHTML = html;
+        tooltip.classList.add("show");
+      });
+      hit.addEventListener("mouseleave", ()=> tooltip.classList.remove("show"));
+    });
+  }
+
+  function renderSparkline(points){
+    const svg = $("#sparkline");
+    if (!points || points.length<2){ svg.innerHTML=""; return; }
+    const W=720, H=130, padL=40, padR=14, padT=14, padB=26;
+    const plotW=W-padL-padR, plotH=H-padT-padB;
+    const maxN = points[points.length-1].n;
+    const maxMad = Math.max(0.02, ...points.map(p=>p.mad)) * 1.15;
+    function x(n){ return padL + (n/maxN)*plotW; }
+    function y(m){ return padT + plotH - (m/maxMad)*plotH; }
+    let s = "";
+    const thresholdY = y(0.006);
+    s += `<line x1="${padL}" y1="${thresholdY}" x2="${W-padR}" y2="${thresholdY}" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.65"/>`;
+    s += `<line x1="${padL}" y1="${padT+plotH}" x2="${W-padR}" y2="${padT+plotH}" stroke="var(--ink-faint)" stroke-width="1"/>`;
+    let path = "";
+    points.forEach((p,i)=>{ const px=x(p.n), py=y(p.mad); path += (i===0?"M":"L")+px+","+py+" "; });
+    s += `<path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
+    const last = points[points.length-1];
+    s += `<circle cx="${x(last.n)}" cy="${y(last.mad)}" r="3.5" fill="var(--accent)"/>`;
+    s += `<text x="${padL}" y="${padT+plotH+18}" font-size="11" text-anchor="start">N=${points[0].n}</text>`;
+    s += `<text x="${W-padR}" y="${padT+plotH+18}" font-size="11" text-anchor="end">N=${maxN}</text>`;
+    svg.innerHTML = s;
+  }
+
+  function renderTable(rows){
+    const tbody = $("#dataTable tbody");
+    tbody.innerHTML = rows.map(r=>{
+      const dev = r.obsPct - r.expPct;
+      const devStr = (dev>=0?"+":"") + (dev*100).toFixed(1) + " п.п.";
+      const color = Math.abs(dev) > 0.03 ? "var(--bad)" : (Math.abs(dev)>0.015 ? "var(--warn)" : "var(--ink-secondary)");
+      return `<tr>
+        <td>${r.d}</td>
+        <td class="num">${r.count}</td>
+        <td class="num">${fmtPct(r.obsPct)}</td>
+        <td class="num">${fmtPct(r.expPct)}</td>
+        <td class="num" style="color:${color}">${devStr}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function renderResults(result, sourceLabel, compareResult, compareLabel, trajectory){
+    resultsEl.classList.add("active");
+
+    $("#chartTitle").textContent = result.mode==="second" ? "Распределение вторых цифр" : "Распределение первых цифр";
+
+    const pill = $("#verdictPill");
+    const text = $("#verdictText");
+    const banner = $("#verdictBanner");
+    const colorMap = { good:["var(--good)","var(--good-soft)"], warn:["var(--warn)","var(--warn-soft)"], bad:["var(--bad)","var(--bad-soft)"] };
+    const [fg,bg] = colorMap[result.verdictKey];
+    pill.textContent = result.verdict;
+    pill.style.color = fg; pill.style.background = bg;
+    banner.style.background = bg; banner.style.borderColor = fg;
+
+    let explain;
+    if (result.verdictKey==="good"){
+      explain = `Распределение цифр близко к теоретической кривой Бенфорда. Это типично для «органических» данных, не подогнанных под конкретные значения.`;
+    } else if (result.verdictKey==="warn"){
+      explain = `Есть заметные, но не критичные отклонения от закона. Возможно, сказывается ограниченный диапазон значений или небольшой объём выборки.`;
+    } else {
+      explain = `Распределение существенно отличается от ожидаемого законом Бенфорда. Причиной может быть узкий диапазон данных, округление, присвоенные (а не измеренные) числа, либо это признак того, что данные скорректированы вручную.`;
+    }
+    text.textContent = explain;
+
+    $("#statN").textContent = fmtNum(result.used,0);
+    $("#statNsub").textContent = result.discarded>0 ? `отброшено значений: ${result.discarded}` : "все значения учтены";
+    $("#statChiLabel").textContent = `χ² (df=${result.df})`;
+    $("#statChi").textContent = fmtNum(result.chiSq,2);
+    $("#statP").textContent = "p " + (result.p<0.0001? "< 0,0001" : "≈ " + fmtNum(result.p,4));
+    const crit = CHI_CRIT[result.df];
+    if (crit!=null){
+      const exceeds = result.chiSq > crit;
+      $("#statChiCrit").innerHTML = `крит. значение (α=0,05): <span style="color:${exceeds?"var(--bad)":"var(--good)"}; font-weight:600;">${fmtNum(crit,2)}</span>`;
+    }
+    $("#statMad").textContent = fmtNum(result.mad,4);
+    $("#statSource").textContent = sourceLabel;
+
+    const legend = $("#legend");
+    let legendHtml = `<span class="item"><span class="swatch bar"></span>Ваши данные</span>`;
+    if (compareResult) legendHtml += `<span class="item"><span class="swatch bar2"></span>${compareLabel}</span>`;
+    legendHtml += `<span class="item"><span class="swatch line"></span>Ожидаемо по закону Бенфорда</span>`;
+    legend.innerHTML = legendHtml;
+
+    renderChart(result.rows, compareResult ? compareResult.rows : null);
+    renderTable(result.rows);
+    renderSparkline(trajectory);
+
+    if (result.used < 30){
+      setStatus("Внимание: в выборке меньше 30 значений, статистика по закону Бенфорда становится ненадёжной. Используйте больше данных для устойчивого вывода.", true);
+    } else {
+      setStatus("");
+    }
+
+    lastResult = { result, sourceLabel };
+    resultsEl.scrollIntoView({ behavior:"smooth", block:"nearest" });
+  }
+
+  let currentNumbers = [];
+  let currentSourceLabel = "";
+  let currentMode = "first";
+  let compareId = "";
+  let lastResult = null;
+
+  function renderAll(){
+    if (currentNumbers.length===0) return;
+    const result = analyze(currentNumbers, currentMode);
+    let compareResult = null, compareLabel = "";
+    if (compareId){
+      const ds = DATASETS.find(d=>d.id===compareId);
+      if (ds){ compareResult = analyze(ds.data(), currentMode); compareLabel = ds.name; }
+    }
+    const trajectory = computeMadTrajectory(currentNumbers, currentMode);
+    renderResults(result, currentSourceLabel, compareResult, compareLabel, trajectory);
+  }
+
+  function runAnalysis(numbers, sourceLabel){
+    if (numbers.length===0){
+      setStatus("Не удалось распознать ни одного числа во введённых данных.", true);
+      return;
+    }
+    currentNumbers = numbers;
+    currentSourceLabel = sourceLabel;
+    currentMode = "first";
+    document.querySelectorAll(".seg-btn").forEach(b=>b.setAttribute("aria-selected", b.getAttribute("data-mode")==="first" ? "true":"false"));
+    renderAll();
+  }
+
+  /* ---------------- demo cards ---------------- */
+  const demoGrid = $("#demoGrid");
+  demoGrid.innerHTML = DATASETS.map(ds=>`
+    <button class="demo-card" data-id="${ds.id}">
+      <div class="name">${ds.name} <span class="tag ${ds.tag}">${ds.tagText}</span></div>
+      <div class="desc">${ds.desc}</div>
+    </button>
+  `).join("");
+  demoGrid.addEventListener("click", e=>{
+    const btn = e.target.closest(".demo-card");
+    if (!btn) return;
+    const ds = DATASETS.find(d=>d.id===btn.getAttribute("data-id"));
+    if (!ds) return;
+    setStatus("");
+    runAnalysis(ds.data(), ds.source);
+  });
+
+  /* ---------------- digit-order switch ---------------- */
+  document.querySelectorAll(".seg-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll(".seg-btn").forEach(b=>b.setAttribute("aria-selected", b===btn ? "true":"false"));
+      currentMode = btn.getAttribute("data-mode");
+      renderAll();
+    });
+  });
+
+  /* ---------------- compare with another dataset ---------------- */
+  const compareSelect = $("#compareSelect");
+  compareSelect.innerHTML = '<option value="">не сравнивать</option>' +
+    DATASETS.map(ds=>`<option value="${ds.id}">${ds.name}</option>`).join("");
+  compareSelect.addEventListener("change", ()=>{
+    compareId = compareSelect.value;
+    renderAll();
+  });
+
+  /* ---------------- copy verdict as text ---------------- */
+  $("#copyBtn").addEventListener("click", async ()=>{
+    if (!lastResult) return;
+    const r = lastResult.result;
+    const modeLabel = r.mode==="second" ? "вторая значащая цифра" : "первая значащая цифра";
+    const summary = [
+      `Закон Бенфорда: проверка данных`,
+      `Источник: ${lastResult.sourceLabel}`,
+      `Тест: ${modeLabel}`,
+      `N = ${r.used}${r.discarded ? `, отброшено значений: ${r.discarded}` : ""}`,
+      `χ² = ${r.chiSq.toFixed(2)} (df=${r.df}), p ${r.p<0.0001?"< 0,0001":"≈ "+r.p.toFixed(4)}`,
+      `MAD = ${r.mad.toFixed(4)}`,
+      `Вывод: ${r.verdict}`,
+    ].join("\n");
+    const btn = $("#copyBtn");
+    try {
+      await navigator.clipboard.writeText(summary);
+      btn.textContent = "Скопировано";
+      btn.classList.add("copied");
+    } catch(e){
+      setStatus("Не удалось скопировать автоматически: выделите и скопируйте вывод вручную.", true);
+    }
+    setTimeout(()=>{ btn.textContent = "Скопировать вывод"; btn.classList.remove("copied"); }, 1800);
+  });
+
+  /* ---------------- tabs ---------------- */
+  document.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll(".tab-btn").forEach(b=>b.setAttribute("aria-selected", b===btn ? "true":"false"));
+      document.querySelectorAll(".tab-panel").forEach(p=>{
+        p.classList.toggle("active", p.getAttribute("data-panel")===btn.getAttribute("data-tab"));
+      });
+    });
+  });
+
+  /* ---------------- paste ---------------- */
+  $("#analyzePaste").addEventListener("click", ()=>{
+    const nums = parseFreeText($("#pasteInput").value);
+    setStatus("");
+    runAnalysis(nums, "Введено вручную");
+  });
+
+  /* ---------------- file upload ---------------- */
+  const dropZone = $("#dropZone");
+  const fileInput = $("#fileInput");
+  const columnRow = $("#fileColumnRow");
+  const columnSelect = $("#columnSelect");
+  let parsedTable = null; // { headers, rows(2d strings) }
+  let currentFileName = "";
+
+  function handleFile(file){
+    currentFileName = file.name;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const text = e.target.result;
+      const lines = text.split(/\r?\n/).filter(l=>l.trim().length>0);
+      if (lines.length===0){ setStatus("Файл пуст.", true); return; }
+      const delim = detectDelimiter(lines[0]);
+      const table = lines.map(l=>l.split(delim).map(c=>c.trim().replace(/^"|"$/g,"")));
+      const firstRowNumeric = table[0].every(c=> c!=="" && !isNaN(parseFloat(c.replace(",", "."))));
+      const headers = firstRowNumeric
+        ? table[0].map((_,i)=>"Столбец "+(i+1))
+        : table[0];
+      const dataRows = firstRowNumeric ? table : table.slice(1);
+      parsedTable = { headers, rows: dataRows };
+      columnSelect.innerHTML = headers.map((h,i)=>`<option value="${i}">${h}</option>`).join("");
+      columnRow.style.display = "flex";
+      setStatus(`Загружен файл «${file.name}»: строк ${dataRows.length}, столбцов ${headers.length}.`);
+    };
+    reader.onerror = ()=> setStatus("Не удалось прочитать файл.", true);
+    reader.readAsText(file, "UTF-8");
+  }
+
+  fileInput.addEventListener("change", e=>{
+    if (e.target.files[0]) handleFile(e.target.files[0]);
+  });
+  ["dragover","dragenter"].forEach(evt=>{
+    dropZone.addEventListener(evt, e=>{ e.preventDefault(); dropZone.classList.add("drag"); });
+  });
+  ["dragleave","drop"].forEach(evt=>{
+    dropZone.addEventListener(evt, e=>{ e.preventDefault(); dropZone.classList.remove("drag"); });
+  });
+  dropZone.addEventListener("drop", e=>{
+    const f = e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  });
+
+  $("#analyzeFile").addEventListener("click", ()=>{
+    if (!parsedTable) return;
+    const col = +columnSelect.value;
+    const values = parsedTable.rows
+      .map(r=>r[col])
+      .filter(v=>v!==undefined && v!=="")
+      .map(v=>parseFloat(String(v).replace(",", ".")))
+      .filter(n=>!isNaN(n) && isFinite(n));
+    setStatus("");
+    runAnalysis(values, `Файл: ${currentFileName}, столбец «${columnSelect.options[columnSelect.selectedIndex].text}»`);
+  });
+
+  /* ---------------- print ---------------- */
+  $("#printBtn").addEventListener("click", ()=> window.print());
+
+  /* ---------------- onboarding guide ---------------- */
+  const onboardingOverlay = $("#onboardingOverlay");
+  function openOnboarding(){
+    onboardingOverlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    $("#onboardingClose").focus();
+  }
+  function closeOnboarding(remember){
+    onboardingOverlay.hidden = true;
+    document.body.style.overflow = "";
+    if (remember){
+      try{ localStorage.setItem("benfordOnboardingSeen", "1"); } catch(e){}
+    }
+  }
+  $("#onboardingStart").addEventListener("click", ()=> closeOnboarding(true));
+  $("#onboardingClose").addEventListener("click", ()=> closeOnboarding(true));
+  onboardingOverlay.addEventListener("click", e=>{ if (e.target===onboardingOverlay) closeOnboarding(true); });
+  document.addEventListener("keydown", e=>{ if (e.key==="Escape" && !onboardingOverlay.hidden) closeOnboarding(true); });
+  $("#openGuideBtn").addEventListener("click", ()=> openOnboarding());
+
+  let onboardingSeen = false;
+  try{ onboardingSeen = localStorage.getItem("benfordOnboardingSeen")==="1"; } catch(e){}
+  if (!onboardingSeen) openOnboarding();
+
+  /* ---------------- initial state: show a real result, not an empty shell ---------------- */
+  runAnalysis(fibonacci(), "Точный математический ряд (пример по умолчанию)");
+
+})();
+</script>
+
+</body>
+</html>
